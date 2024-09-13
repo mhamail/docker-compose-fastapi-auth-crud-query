@@ -1,0 +1,38 @@
+version: "1.0.1"
+
+name: myapi
+
+services:
+  fastapi: # fast image name
+    build:
+      context: ./querysqlalchemy
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres_db
+    ports:
+      - "9000:8000"
+    networks:
+      - my-api-network
+    volumes:
+      - ./querysqlalchemy:/code # Mount local directory to the container directory
+
+  postgres_db: # postgres db name
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=test
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    networks:
+      - my-api-network
+
+volumes:
+  postgres_db:
+    driver: local
+
+networks:
+  my-api-network:
